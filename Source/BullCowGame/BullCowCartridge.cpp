@@ -1,22 +1,24 @@
 #include "BullCowCartridge.h"
+#include "HiddenWordList.h"
 
-void UBullCowCartridge::BeginPlay() // When the game starts
+void UBullCowCartridge::BeginPlay()
 {
     Super::BeginPlay();
 
     SetupGame();
 
+    PrintLine(TEXT("Te number of possible words is %i"), Words.Num());
     PrintLine(TEXT("The HiddenWord is: %s"), *HiddenWord); // Debug Line
 }
 
-void UBullCowCartridge::OnInput(const FString &Input) // When the player hits enter
+void UBullCowCartridge::OnInput(const FString &Input)
 {
     if (bGameOver)
     {
         ClearScreen();
         SetupGame();
     }
-    else // else Checking PlayerGuess
+    else
     {
         ProcessGuess(Input);
     }
@@ -24,7 +26,6 @@ void UBullCowCartridge::OnInput(const FString &Input) // When the player hits en
 
 void UBullCowCartridge ::SetupGame()
 {
-    // Welcoming The Player
     PrintLine(TEXT("Welcome to Bull Cows!"));
 
     HiddenWord = TEXT("cakes");
@@ -51,17 +52,18 @@ void UBullCowCartridge::ProcessGuess(FString Guess)
         return;
     }
 
-    // Check If Isogram
-    // if (!IsIsogram)
-    // {
-    //     /* code */
-    //     PrintLine(TEXT("No repeating letters")
-    // }
-
     if (Guess.Len() != HiddenWord.Len())
     {
         PrintLine(TEXT("The hidden word is %i letters long"), HiddenWord.Len());
         PrintLine(TEXT("Sorry, try guessing again! \nYou ahve %i lives remaining."), Lives);
+        return;
+    }
+
+    //Check If Isogram
+    if (!IsIsogram(Guess))
+    {
+        /* code */
+        PrintLine(TEXT("No repeating letters, guess again"));
         return;
     }
 
@@ -81,4 +83,19 @@ void UBullCowCartridge::ProcessGuess(FString Guess)
 
     // Show the players Bulls and Cows
     PrintLine(TEXT("Guess again, you hace %i lives left"), Lives);
+}
+
+bool UBullCowCartridge::IsIsogram(FString Word) const
+{
+    for (int32 Index = 0; Index < Word.Len(); Index++)
+    {
+        for (int32 Comparison = Index + 1; Comparison < Word.Len(); Comparison++)
+        {
+            if (Word[Index] == Word[Comparison])
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
